@@ -4,14 +4,16 @@ from tkinter import ttk
 class HomePage:
     def __init__(self, root):
         root.title("Home")
-        root.geometry("300x600")
+        root.geometry("500x600")
 
-        top_bar_frame = ttk.Frame(root, width=100, height=50)
+
+        top_bar_frame = tk.Frame(root, width=100, height=50, bg="green")
         top_bar_frame.grid(row=0, column=0, sticky="nsew")
 
-        top_bar_label = ttk.Label(top_bar_frame, text="Home")
+        top_bar_label = tk.Label(top_bar_frame, text="Home", bg="red")
         top_bar_label.configure(font=("", 30))
-        top_bar_label.grid(row=0, column=0, padx=20, pady=10, sticky="ew")
+        top_bar_label.grid(row=0, column=0, padx=20, pady=10)
+
 
         main_body_frame = ttk.LabelFrame(root, width=100, height=300, borderwidth=10, text="Tickets")
         main_body_frame.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
@@ -31,10 +33,11 @@ class HomePage:
         ticket_tree.heading("time_created", text="Time Created")
         ticket_tree.heading("wait_time", text="Estimated Wait Time")
 
-        tickets = [("McDonalds", "9:15pm", "20 Minutes"), 
-                ("Burger King", "1 Hour ago", "30 Seconds"), 
-                ("Macleans College", "2 Days ago", "Now"), 
-                ("Countdown", "14/05/2024 09:57 PM", "1 Hour")]
+        tickets = [
+            ("McDonalds", "9:15pm", "20 Minutes"), 
+            ("Burger King", "1 Hour ago", "30 Seconds"), 
+            ("Macleans College", "2 Days ago", "Now"), 
+            ("Countdown", "14/05/2024 09:57 PM", "1 Hour")]
 
         for ticket in tickets:
             ticket_tree.insert('', tk.END, values=ticket)
