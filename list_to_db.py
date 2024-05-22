@@ -4,7 +4,7 @@ import datetime
 connection = sqlite3.connect("macleans.db")
 cursor = connection.cursor()
 
-cursor.execute("create table student_details(st_num long integer, name text, formclass text, house text, dob date)")
+#cursor.execute("create table student_details(st_num long integer, name text, formclass text, house text, dob date)")
 
 
 student_details_list = [        

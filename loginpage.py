@@ -5,20 +5,25 @@ import subprocess
 class LoginPage:
     def __init__(self, root):
         root.title("Login")
-        root.geometry("500x600")
+        root.geometry("400x600")
 
-        username = ""
-        password = ""
+        username = "admin"
+        password = "1234"
 
         def Login():
+            login_feedback.grid(row=2, column=0, columnspan=2)
             if username_submitted.get() == username and password_submitted.get() == password:
+                login_feedback.config(text="Login successful!", fg="green")
                 #Destroys this instance and starts new process of homepage.py
                 root.destroy()
                 subprocess.run(["python", "homepage.py"])
+                print("Success")
             else:
-                #Replace with GUI widget feedback in the future.
+                login_feedback.config(text="Your credentials are incorrect", fg="red")
                 print("Your credentials are incorrect")
-
+            #Clears both entry, doubles as active user feedback.
+            username_entry.delete(0, "end")
+            password_entry.delete(0, "end")
         #Configure root
         root.grid_rowconfigure(0, weight=1)
         root.grid_columnconfigure(0, weight=1)
@@ -45,8 +50,10 @@ class LoginPage:
         password_entry.grid(row=1, column=1, sticky="nsew", padx=10, pady=10)
         password_entry.config(show="*")
 
+        login_feedback = tk.Label(credentials_frame, text="hi", padx=10)
+
         submit_button = ttk.Button(credentials_frame, text="Login", style="Accent.TButton", command=Login)
-        submit_button.grid(row=2, column=0, padx=10, pady=10, sticky="nsew", columnspan=2)
+        submit_button.grid(row=3, column=0, padx=10, pady=10, sticky="nsew", columnspan=2)
         submit_button.configure()
 
 #Main

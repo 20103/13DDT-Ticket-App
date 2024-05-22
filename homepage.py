@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+import sqlite3
 
 class HomePage:
     def __init__(self, root):
@@ -33,14 +34,20 @@ class HomePage:
         ticket_tree.heading("time_created", text="Time Created")
         ticket_tree.heading("wait_time", text="Estimated Wait Time")
 
-        tickets = [
+        connection = sqlite3.connect("tickets.db")
+        cursor = connection.cursor()
+
+        """tickets = [
             ("McDonalds", "9:15pm", "20 Minutes"), 
             ("Burger King", "1 Hour ago", "30 Seconds"), 
             ("Macleans College", "2 Days ago", "Now"), 
-            ("Countdown", "14/05/2024 09:57 PM", "1 Hour")]
+            ("Countdown", "14/05/2024 09:57 PM", "1 Hour")]"""
+        
+        for ticket_detail in cursor.execute("select * from ticket_details"):
+            ticket_tree.insert('', tk.END, values=ticket_detail)
 
-        for ticket in tickets:
-            ticket_tree.insert('', tk.END, values=ticket)
+        connection.commit()
+        connection.close()
 
         create_ticket_button = ttk.Button(main_body_frame, text="Create A Ticket", style="Accent.TButton")
         create_ticket_button.grid(row=1, column=0, pady=20, sticky="nsew")
