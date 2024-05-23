@@ -7,10 +7,11 @@ class LoginPage:
         root.title("Login")
         root.geometry("400x600")
 
+
         username = "admin"
         password = "1234"
 
-        def Login():
+        def Login(event=None):
             login_feedback.grid(row=2, column=0, columnspan=2)
             if username_submitted.get() == username and password_submitted.get() == password:
                 login_feedback.config(text="Login successful!", fg="green")
@@ -24,6 +25,8 @@ class LoginPage:
             #Clears both entry, doubles as active user feedback.
             username_entry.delete(0, "end")
             password_entry.delete(0, "end")
+
+        root.bind('<Return>', Login)
         #Configure root
         root.grid_rowconfigure(0, weight=1)
         root.grid_columnconfigure(0, weight=1)
@@ -50,6 +53,7 @@ class LoginPage:
         password_entry.grid(row=1, column=1, sticky="nsew", padx=10, pady=10)
         password_entry.config(show="*")
 
+        #Label which will display whether or not a login is successful
         login_feedback = tk.Label(credentials_frame, text="hi", padx=10)
 
         submit_button = ttk.Button(credentials_frame, text="Login", style="Accent.TButton", command=Login)
