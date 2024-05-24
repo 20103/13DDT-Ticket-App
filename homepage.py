@@ -7,20 +7,21 @@ class HomePage:
     def __init__(self, root):
         root.title("Home")
         root.geometry("500x600")
-
+        
         #Two distinct sections: Top Bar and Ticket Actions.
-        top_bar_frame = tk.Frame(root, width=100, height=50)
+        top_bar_frame = tk.Frame(root, bg="green")
         top_bar_frame.grid(row=0, column=0, sticky="nsew")
 
-        top_bar_label = tk.Label(top_bar_frame, text="Home")
+        top_bar_label = tk.Label(top_bar_frame, text="Home", bg="red")
         top_bar_label.configure(font=("", 30))
         top_bar_label.grid(row=0, column=0, padx=20, pady=10)
 
-        main_body_frame = ttk.LabelFrame(root, width=100, height=300, borderwidth=10, text="Tickets")
+        main_body_frame = ttk.LabelFrame(root, borderwidth=10, text="Tickets")
         main_body_frame.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
 
         #Scale widgets appropriately according to window size.
         root.grid_columnconfigure(0, weight=1)
+        root.grid_rowconfigure(0, weight=0)
         root.grid_rowconfigure(1, weight=1)
 
         #Create a tree to display ticket information.
