@@ -1,27 +1,42 @@
 import tkinter as tk
 from tkinter import ttk
 import subprocess
+import sqlite3
 
 class LoginPage:
     def __init__(self, root):
         root.title("Login")
         root.geometry("400x600")
 
+        #Validates the login by comparing with db
+        def ValidLogin():
+            print(f"Submitted Username: {username_submitted.get()} \nSubmitted Password:{password_submitted.get()}")
+            #Initialise and access db holding login information.
+            connection = sqlite3.connect("logins.db")
+            cursor = connection.cursor()
+            #Checks every row in login_details for a match.
+            for login_detail in cursor.execute("select * from user_logins"):
+                #If row (username, password) is equals to entry, return true. Else false.
+                
+                if login_detail[0] == username_submitted.get() and login_detail[1] == password_submitted.get():
+                    return True
+            return False
 
-        username = "admin"
-        password = "1234"
 
+        #Function which handles login attempt.       
         def Login(event=None):
             login_feedback.grid(row=2, column=0, columnspan=2)
-            if username_submitted.get() == username and password_submitted.get() == password:
+            #Credentials match
+            if ValidLogin():
                 login_feedback.config(text="Login successful!", fg="green")
                 #Destroys this instance and starts new process of homepage.py
                 root.destroy()
                 subprocess.run(["python", "homepage.py"])
                 print("Success")
+            #Credentials do not match. Perhaps consider adding personalised information? e.g. This username does not exist, Password hint: 2 Numbers. However, consider security implications.
             else:
-                login_feedback.config(text="Your credentials are incorrect", fg="red")
-                print("Your credentials are incorrect")
+                login_feedback.config(text="Please check your credentials.", fg="red")
+                print("Fail")
             #Clears both entry, doubles as active user feedback.
             username_entry.delete(0, "end")
             password_entry.delete(0, "end")
