@@ -11,14 +11,15 @@ cursor.execute(create_table_command)
 
 #Dummy values.
 #Also, consider linking logins with ticket. Either as two separate dbs, or a table in one?
-logins = [
+"""logins = [
     ("Admin", "1234"), 
     ("User1", "password"),
-    ("catlover", "ilovecats")]
+    ("catlover", "ilovecats")]"""
+
+
+#cursor.executemany("insert into user_logins values (?,?)" , logins)
 
 #Prints out values from db.
-cursor.executemany("insert into user_logins values (?,?)" , logins)
-
 for row in cursor.execute("select * from user_logins"):
     print(row)
 
