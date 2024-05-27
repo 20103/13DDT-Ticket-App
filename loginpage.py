@@ -42,6 +42,13 @@ class LoginPage:
             password_entry.delete(0, "end")
 
         root.bind('<Return>', Login)
+
+        def SignUp():
+            root.destroy()
+            subprocess.run(["python", "signuppage.py"])
+            print("Sign-Up")
+
+
         #Configure root
         root.grid_rowconfigure(0, weight=1)
         root.grid_columnconfigure(0, weight=1)
@@ -69,11 +76,13 @@ class LoginPage:
         password_entry.config(show="*")
 
         #Label which will display whether or not a login is successful
-        login_feedback = tk.Label(credentials_frame, text="hi", padx=10)
+        login_feedback = tk.Label(credentials_frame, text="N/A", padx=10)
 
         submit_button = ttk.Button(credentials_frame, text="Login", style="Accent.TButton", command=Login)
         submit_button.grid(row=3, column=0, padx=10, pady=10, sticky="nsew", columnspan=2)
-        submit_button.configure()
+
+        signup_button = ttk.Button(credentials_frame, text="Sign-Up", command=SignUp)
+        signup_button.grid(row=4, column=0, padx=10, pady=10, columnspan=2)
 
 #Main
 if __name__ == "__main__":
