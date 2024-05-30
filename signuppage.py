@@ -44,12 +44,13 @@ class SignUpPage:
                try:
                     user_login = [username, password1]
                     #ERROR: Can't insert data
-                    cursor.executemany("insert into user_logins values (?, ?)", user_login)
+                    cursor.executemany("insert into user_logins values (?, ?)", (user_login,))
                     print("Created account")
                except sqlite3.Error as e:
                     print(f"Database could not be fetched: {e}")
                     Msg = f"Database error: {e}"
                finally:
+                    connection.commit()
                     connection.close()
 
                print("Logging in")
