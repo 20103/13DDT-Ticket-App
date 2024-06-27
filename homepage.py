@@ -1,10 +1,20 @@
 import tkinter as tk
 from tkinter import ttk
-import sqlite3
+import sqlite3, subprocess
 
 class HomePage:
     #Initialisation
     def __init__(self, root):
+        
+        def CreateTicket():
+            root.destroy()
+            subprocess.run(["python", "createticket.py"])
+
+        def Logout():
+            root.destroy()
+            subprocess.run(["python", "loginpage.py"])
+
+
         root.title("Home")
         root.geometry("500x600")
         
@@ -15,6 +25,9 @@ class HomePage:
         top_bar_label = tk.Label(top_bar_frame, text="Home", bg="red")
         top_bar_label.configure(font=("", 30))
         top_bar_label.grid(row=0, column=0, padx=20, pady=10)
+
+        logout_button = ttk.Button(top_bar_frame, text="Logout", command=Logout)
+        logout_button.grid(row=0, column=1)
 
         main_body_frame = ttk.LabelFrame(root, borderwidth=10, text="Tickets")
         main_body_frame.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
@@ -61,7 +74,7 @@ class HomePage:
         connection.commit()
         connection.close()
 
-        create_ticket_button = ttk.Button(main_body_frame, text="Create A Ticket", style="Accent.TButton")
+        create_ticket_button = ttk.Button(main_body_frame, text="Create A Ticket", style="Accent.TButton", command=CreateTicket)
         create_ticket_button.grid(row=1, column=0, pady=20, sticky="nsew")
 
 
