@@ -1,19 +1,33 @@
 import tkinter as tk
 from tkinter import ttk
-import subprocess
-import sqlite3
+import subprocess, sqlite3
+from password_strength import PasswordPolicy
+from passlib.hash import pbkdf2_sha256
 
 class SignUpPage:
+
     def __init__(self):
         root.title("Sign-Up")
-        root.geometry("400x600")
+        root.geometry("400x400")
 
         def Login():
             root.destroy()
             subprocess.run(["python", "loginpage.py"])
+
+        #Password hashing function
+        def HashPassword(plaintext):
+            #Debugging
+            print(f"Password hash = {pbkdf2_sha256.hash(plaintext)}")
+            return pbkdf2_sha256.hash(plaintext)
         
         #Function which begins the process of validating signup information.
         def ValidateSignup(user, pass1, pass2):
+
+            PASSWORD_POLICY = PasswordPolicy.from_names(
+                length=8,
+                uppercase=1,
+                numbers=1,
+            )
 
             if not ValidString(user):
                 #If username is empty
@@ -26,8 +40,23 @@ class SignUpPage:
                 return [False, "Passwords do not match"]
             
             if not ValidString(pass1):
+                #If password is empty
                 print("Password must not be empty.")
                 return [False, "Password must not be empty"] 
+            
+            if PASSWORD_POLICY.test(pass1):
+                #Password does not meet at least 1 condition
+                print("A password condition was not met")
+                #This variable is assigned a tuple of conditions which are not met
+                failed_conditions = PASSWORD_POLICY.test(pass1)
+                print(failed_conditions)
+
+                #Default message
+                conditions_message = "Your password must meet the following conditions:"
+                #Iterates over every failed condition in failed_conditions tuple, and concatenates them to the default message.
+                for condition in failed_conditions:
+                    conditions_message += f"\n- {condition}"
+                return [False, conditions_message]
 
             result = [False, "No message provided"]
                 
@@ -54,7 +83,7 @@ class SignUpPage:
                 
         def CreateAccount(username, password1, password2):
             feedback_widget = self.signup_feedback
-            feedback_widget.grid(row=3, column=0, columnspan=2)
+            feedback_widget.grid(row=4, column=0, columnspan=2)
             Feedback = ValidateSignup(username, password1, password2)
             Success, Msg = Feedback[0], Feedback[1]
             if Success:
@@ -63,7 +92,7 @@ class SignUpPage:
                cursor = connection.cursor()
                try:
                     #Organises account data into a table, which is then inserted into the user_logins table.
-                    user_login = [username, password1]
+                    user_login = [username, HashPassword(password1)]
                     cursor.executemany("insert into user_logins values (?, ?)", (user_login,))
                     print("Created account")
                except sqlite3.Error as e:
@@ -110,23 +139,28 @@ class SignUpPage:
         self.password_entry.grid(row=1, column=1, sticky="nsew", padx=10, pady=10)
         self.password_entry.config(show="*")
 
+        """password_requirement = ttk.Label(self.credentials_frame, text="Your password must contain:\nAt least 8 characters")
+        password_requirement.grid(row=2, column=1)"""
+
         self.password_confirmation_label = tk.Label(self.credentials_frame, text="Re-enter \npassword")
-        self.password_confirmation_label.grid(row=2, column=0, sticky="nsew")
+        self.password_confirmation_label.grid(row=3, column=0, sticky="nsew")
         self.password_confirmation_label.configure(font=("", 15))
 
         password_confirmation_submitted = tk.StringVar()
         self.password_confirmation_entry = ttk.Entry(self.credentials_frame, textvariable=password_confirmation_submitted)
-        self.password_confirmation_entry.grid(row=2, column=1, sticky="nsew", padx=10, pady=20)
+        self.password_confirmation_entry.grid(row=3, column=1, sticky="nsew", padx=10, pady=20)
         self.password_confirmation_entry.config(show="*")
 
         #Label which will display whether or not a signup is successful
         self.signup_feedback = tk.Label(self.credentials_frame, text="N/A", padx=10)
 
         self.signup_button = ttk.Button(self.credentials_frame, style="Accent.TButton", text="Create Account", command=lambda: CreateAccount(username_submitted.get(), password_submitted.get(), password_confirmation_submitted.get()))
-        self.signup_button.grid(row=4, column=0, sticky="nsew", padx=10, pady=10, columnspan=2)
+        self.signup_button.grid(row=5, column=0, sticky="nsew", padx=10, pady=10, columnspan=2)
 
         self.login_button = ttk.Button(self.credentials_frame, text="Go back to login page", command=Login)
-        self.login_button.grid(row=5, column=0, columnspan=2)
+        self.login_button.grid(row=6, column=0, columnspan=2)
+
+
 
 if __name__ == "__main__":
     root = tk.Tk()
