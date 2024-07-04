@@ -2,12 +2,13 @@ import tkinter as tk
 from tkinter import ttk
 import subprocess
 import sqlite3
+from passlib.hash import pbkdf2_sha256
 
 class LoginPage:
     def __init__(self, root):
         root.title("Login")
         root.geometry("400x600")
-
+        
         #Validates the login by comparing with db
         def ValidLogin():
             print(f"Submitted Username: {username_submitted.get()} \nSubmitted Password:{password_submitted.get()}")
@@ -16,9 +17,8 @@ class LoginPage:
             cursor = connection.cursor()
             #Checks every row in login_details for a match.
             for login_detail in cursor.execute("select * from user_logins"):
-                #If row (username, password) is equals to entry, return true. Else false.
-                
-                if login_detail[0] == username_submitted.get() and login_detail[1] == password_submitted.get():
+                #Makes sure username entered exist, and the password submitted matches the hash.
+                if login_detail[0] == username_submitted.get() and pbkdf2_sha256.verify(password_submitted.get(), login_detail[1]):
                     return True
             return False
 
