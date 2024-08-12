@@ -1,18 +1,33 @@
 import tkinter as tk
 from tkinter import ttk, font
-import subprocess, sqlite3, random, string
+import subprocess, random, string, qrcode
 
 class CreateTicket:
 
     def __init__(self, root):
-        TICKET_NUMBER_LENGTH = 6
+        QR_NUMBER_LENGTH = 20
+
+        def JoinQueue():
+            #Destroys this instance and starts new process of queue.py
+                root.destroy()
+                subprocess.run(["python", "queueinfo.py"])
+                print("Success")
 
         def GenerateTicket():
-            generated_ticket = ''.join(random.choices(string.ascii_uppercase + string.digits, k=TICKET_NUMBER_LENGTH))
-            info_label.configure(text="Your unique ticket number is:")
+
+            #Instead of generating a unique number and storing that, perhaps make it so the business has a unique QR code that is tied with their business account. When a customer account scans the QR code, they can see business information such as the queue length and average wait time. They will also be able to join the queue by signging into their account, and see live feedback on the mobile app.
+            generated_ticket = ''.join(random.choices(string.ascii_uppercase + string.digits, k=QR_NUMBER_LENGTH))
+            info_label.configure(text="Your unique business code is:")
+
+            img = qrcode.make(generated_ticket)
+
+            img.save("generated_qr_code.png")
+
 
             ticket_number_label.grid(row=3, sticky="nsew")
             ticket_number_label.configure(text=generated_ticket)
+
+            #Probably save the QR code with the rest of the information in the DB
 
 
          #Configure root
@@ -31,7 +46,7 @@ class CreateTicket:
         main_frame = tk.LabelFrame(root, text="Tickets")
         main_frame.grid(row=1, column=0)
 
-        info_label = ttk.Label(main_frame, text="You are not in a queue. Click the button below to generate a ticket")
+        info_label = tk.Label(main_frame, text="You are not in a queue.\nClick the button below to generate a ticket")
         info_label.configure(font=("", 15))
         info_label.grid(row=2, column=0, padx=10, pady=10)
 
@@ -41,6 +56,9 @@ class CreateTicket:
 
         create_ticket_button = ttk.Button(main_frame, text="Create a ticket", style="Accent.TButton", command=GenerateTicket)
         create_ticket_button.grid(row=4, column=0, padx=20, pady=20)
+
+        join_queue_button = ttk.Button(main_frame, text="Join the queue", command=JoinQueue)
+        join_queue_button.grid(row=5, column=0, padx=10, pady=10)
 
 
 
