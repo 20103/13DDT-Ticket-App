@@ -1,11 +1,14 @@
 import tkinter as tk
 from tkinter import ttk
-import sqlite3, subprocess
+import sqlite3, subprocess, os, json
 
 class HomePage:
     #Initialisation
     def __init__(self, root):
-        
+        #Root Config
+        root.title("Home")
+        root.geometry("300x300")
+
         def CreateTicket():
             root.destroy()
             subprocess.run(["python", "createticket.py"])
@@ -13,10 +16,6 @@ class HomePage:
         def Logout():
             root.destroy()
             subprocess.run(["python", "loginpage.py"])
-
-
-        root.title("Home")
-        root.geometry("500x600")
         
         #Two distinct sections: Top Bar and Ticket Actions.
         top_bar_frame = tk.Frame(root, bg="green")
@@ -29,6 +28,14 @@ class HomePage:
         logout_button = ttk.Button(top_bar_frame, text="Logout", command=Logout)
         logout_button.grid(row=0, column=1)
 
+        with open("settings.json", mode="r", encoding="utf-8") as openfile:
+            json_object = json.load(openfile)
+            print(json_object)
+            currentUser = json_object.get("username")
+        
+        welcome_message_label = ttk.Label(top_bar_frame, text=f"Welcome, {currentUser}!")
+        welcome_message_label.grid(row=1, column=0)
+
         main_body_frame = ttk.LabelFrame(root, borderwidth=10, text="Tickets")
         main_body_frame.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
 
@@ -37,7 +44,7 @@ class HomePage:
         root.grid_rowconfigure(0, weight=0)
         root.grid_rowconfigure(1, weight=1)
 
-        #Create a tree to display ticket information.
+        """#Create a tree to display ticket information.
         ticket_tree_columns = ("venue", "time_created", "wait_time")
 
         ticket_tree = ttk.Treeview(main_body_frame, columns=ticket_tree_columns, show="headings")
@@ -57,14 +64,14 @@ class HomePage:
         cursor = connection.cursor()
 
         #Example code in basic table form.
-        """tickets = [
+        tickets = [
             ("McDonalds", "9:15pm", "20 Minutes"), 
             ("Burger King", "1 Hour ago", "30 Seconds"), 
             ("Macleans College", "2 Days ago", "Now"), 
             ("Countdown", "14/05/2024 09:57 PM", "1 Hour")]
         
         for ticket in tickets:
-            ticket_tree.insert(ticket)"""
+            ticket_tree.insert(ticket)
 
         #Insert each row from db into the treeview.
         for ticket_detail in cursor.execute("select * from ticket_details"):
@@ -72,7 +79,7 @@ class HomePage:
 
         #End db connection.
         connection.commit()
-        connection.close()
+        connection.close()"""
 
         create_ticket_button = ttk.Button(main_body_frame, text="Create A Ticket", style="Accent.TButton", command=CreateTicket)
         create_ticket_button.grid(row=1, column=0, pady=20, sticky="nsew")
