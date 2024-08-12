@@ -4,8 +4,8 @@ import subprocess, sqlite3
 from password_strength import PasswordPolicy
 from passlib.hash import pbkdf2_sha256
 
-class SignUpPage:
 
+class SignUpPage:
     def __init__(self):
         root.title("Sign-Up")
         root.geometry("400x400")
@@ -19,6 +19,9 @@ class SignUpPage:
             #Debugging
             print(f"Password hash = {pbkdf2_sha256.hash(plaintext)}")
             return pbkdf2_sha256.hash(plaintext)
+        
+        def ValidString(str):
+            return not str.isspace() and len(str) > 0
         
         #Function which begins the process of validating signup information.
         def ValidateSignup(user, pass1, pass2):
@@ -44,6 +47,10 @@ class SignUpPage:
                 print("Password must not be empty.")
                 return [False, "Password must not be empty"] 
             
+            if " " in pass1:
+                print("Password contains whitespace")  
+                return [False, "Password must not contain any whitespace"]
+
             if PASSWORD_POLICY.test(pass1):
                 #Password does not meet at least 1 condition
                 print("A password condition was not met")
@@ -58,28 +65,8 @@ class SignUpPage:
                     conditions_message += f"\n- {condition}"
                 return [False, conditions_message]
 
-            result = [False, "No message provided"]
+            return [True, "No message provided"]
                 
-            connection = sqlite3.connect("logins.db")
-            cursor = connection.cursor()
-            #Checks every row in login_details for a match.
-            try:
-                cursor.execute("SELECT 1 FROM user_logins where username =?", (user,))
-                if cursor.fetchone() is not None:
-                    #Account already exists, stays Falsey
-                    print("Username already exists")
-                    return [False, "Password must not be empty"] 
-                else:
-                    #Account does not exist, becomes Truthy
-                    print("No duplicates found")
-                    return [True, "Account created"]
-            except sqlite3.Error as e:
-                #Database encountered an error, stays Falsey
-                print(f"Database could not be fetched: {e}")
-                result[1] = f"Database error: {e}"
-            finally:
-                #Once all operations are completed, close the connection.
-                connection.close()
                 
         def CreateAccount(username, password1, password2):
             feedback_widget = self.signup_feedback
@@ -88,7 +75,7 @@ class SignUpPage:
             Success, Msg = Feedback[0], Feedback[1]
             if Success:
                #ValidateSignup() function returns true, continue with account creation
-               connection = sqlite3.connect("logins.db")
+               connection = sqlite3.connect("main.db")
                cursor = connection.cursor()
                try:
                     #Organises account data into a table, which is then inserted into the user_logins table.
@@ -96,23 +83,24 @@ class SignUpPage:
                     cursor.executemany("insert into user_logins values (?, ?)", (user_login,))
                     print("Created account")
                except sqlite3.Error as e:
-                    print(f"Database could not be fetched: {e}")
-                    Msg = f"Database error: {e}"
+                    if "UNIQUE constraint failed" in str(e):
+                        print("Database error: Unique constraint failed")
+                        feedback_widget.config(text="This username already exists")
+                        return
+                    else:
+                        print(f"Database error: {e}")
                finally:
                     #Commit all changes and close the connection.
                     connection.commit()
                     connection.close()
 
-               print("Logging in")
+               print("Account created")
                #Destroys window and opens homepage.py
                root.destroy()
-               subprocess.run(["python", "homepage.py"])  
-               print("Home")
+               subprocess.run(["python", "loginpage.py"])  
+               print("Login page")
             #Message changes depending on feedback given.
             feedback_widget.config(text=Msg)    
-
-        def ValidString(str):
-            return not str.isspace() and len(str) > 0
 
         #Configure root
         root.grid_rowconfigure(0, weight=1)
@@ -159,7 +147,6 @@ class SignUpPage:
 
         self.login_button = ttk.Button(self.credentials_frame, text="Go back to login page", command=Login)
         self.login_button.grid(row=6, column=0, columnspan=2)
-
 
 
 if __name__ == "__main__":
