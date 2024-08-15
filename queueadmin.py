@@ -16,13 +16,13 @@ class JoinQueue:
             root.destroy()
             subprocess.run(["python", "createticket.py"])
 
-        def GetCurrentUser():
+        """def GetCurrentUser():
             with open("settings.json", mode="r", encoding="utf-8") as openfile:
                 json_object = json.load(openfile)
                 print(json_object)
                 currentUser = json_object.get("username")
 
-                return currentUser
+                return currentUser"""
         
         def DeleteSelectedUser():
             feedback_widget.grid(row=3, column=0)

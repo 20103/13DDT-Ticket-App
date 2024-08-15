@@ -12,6 +12,7 @@ class HomePage:
         root.geometry("400x300")
 
         def GetCurrentUser():
+            #Retrieves Username by accessing JSON file
             with open("settings.json", mode="r", encoding="utf-8") as openfile:
                 json_object = json.load(openfile)
                 print(json_object)
