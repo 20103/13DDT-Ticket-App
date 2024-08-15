@@ -5,38 +5,53 @@ import sqlite3, subprocess, os, json
 class HomePage:
     #Initialisation
     def __init__(self, root):
+
         #Root Config
+        root.wm_iconbitmap('ticket.ico')
         root.title("Home")
-        root.geometry("300x300")
+        root.geometry("400x300")
+
+        def GetCurrentUser():
+            with open("settings.json", mode="r", encoding="utf-8") as openfile:
+                json_object = json.load(openfile)
+                print(json_object)
+                currentUser = json_object.get("username")
+                return currentUser
 
         def CreateTicket():
             root.destroy()
             subprocess.run(["python", "createticket.py"])
 
         def Logout():
+            with open('settings.json', 'r', encoding='utf-8') as f:
+                json_data = json.load(f)
+
+            #Updates username
+            with open('settings.json', 'w') as f:
+                field_key = "username"
+                json_data[field_key] = "N/A"
+                json.dump(json_data, f, indent=4)
+
             root.destroy()
             subprocess.run(["python", "loginpage.py"])
+
+
         
         #Two distinct sections: Top Bar and Ticket Actions.
-        top_bar_frame = tk.Frame(root, bg="green")
+        top_bar_frame = tk.Frame(root)
         top_bar_frame.grid(row=0, column=0, sticky="nsew")
 
-        top_bar_label = tk.Label(top_bar_frame, text="Home", bg="red")
+        top_bar_label = tk.Label(top_bar_frame, text="Home")
         top_bar_label.configure(font=("", 30))
         top_bar_label.grid(row=0, column=0, padx=20, pady=10)
 
         logout_button = ttk.Button(top_bar_frame, text="Logout", command=Logout)
         logout_button.grid(row=0, column=1)
-
-        with open("settings.json", mode="r", encoding="utf-8") as openfile:
-            json_object = json.load(openfile)
-            print(json_object)
-            currentUser = json_object.get("username")
         
-        welcome_message_label = ttk.Label(top_bar_frame, text=f"Welcome, {currentUser}!")
+        welcome_message_label = ttk.Label(top_bar_frame, text=f"Welcome, {GetCurrentUser()}!")
         welcome_message_label.grid(row=1, column=0)
 
-        main_body_frame = ttk.LabelFrame(root, borderwidth=10, text="Tickets")
+        main_body_frame = ttk.LabelFrame(root, borderwidth=10, text="Options")
         main_body_frame.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
 
         #Scale widgets appropriately according to window size.
