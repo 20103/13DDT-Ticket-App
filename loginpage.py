@@ -4,6 +4,7 @@ import subprocess, sqlite3, json
 from passlib.hash import pbkdf2_sha256
 
 class LoginPage:
+
     def ModifyUser(newuser):
             #Accesses and reads the JSON file which holds the current username
             with open('settings.json', 'r') as f:
@@ -17,10 +18,10 @@ class LoginPage:
                 json.dump(json_data, f, indent=4)
     
     def __init__(self, root):
-        global currentuser
 
+        root.wm_iconbitmap('ticket.ico')
         root.title("Login")
-        root.geometry("400x600")
+        root.geometry("400x400")
         
         #Validates the login by comparing with db
         def ValidLogin():
