@@ -29,32 +29,37 @@ class JoinQueue:
 
             selected_user = ticket_tree.selection()
 
+            print(selected_user)
+
             if not selected_user:
                 print("No user has been selected!")
                 feedback_widget.config(text="No user selected!")
-                return
-
-            item = ticket_tree.item(selected_user)
-            username = item['values'][0]
-            time_created = item['values'][1]
-
-            try:
-                #Attempts to delete said row from database and tableview.
-                with sqlite3.connect("main.db") as connection:
-                    cursor = connection.cursor()
-                    cursor.execute("DELETE FROM queue WHERE username = ? AND time_created = ?", (username, time_created))
-
-                ticket_tree.delete(selected_user)
-                feedback_widget.config(text="User removed successfully!")
-
-            except sqlite3.Error as e:
-                feedback_widget.config(text=f"Failed to remove user: {e}")
-                print(f"Database error: {e}")
+                return  
             
-            else:
-                #Commit and close connection
-                connection.commit()
-                connection.close()
+            for selected in selected_user:
+                item = ticket_tree.item(selected)
+                username = item['values'][0]
+                time_created = item['values'][1]
+
+                try:
+                    #Attempts to delete said row from database and tableview.
+                    with sqlite3.connect("main.db") as connection:
+                        cursor = connection.cursor()
+                        cursor.execute("DELETE FROM queue WHERE username = ? AND time_created = ?", (username, time_created))
+
+                    ticket_tree.delete(selected)
+                    feedback_widget.config(text="User removed successfully!")
+
+                except sqlite3.Error as e:
+                        feedback_widget.config(text=f"Failed to remove user: {e}")
+                        print(f"Database error: {e}")
+                    
+                else:
+                    #Commit and close connection
+                    connection.commit()
+                    connection.close()
+
+            
    
    
          #Configure root
@@ -99,7 +104,7 @@ class JoinQueue:
         back_button = ttk.Button(main_frame, text="Go back", style="Accent.TButton", command=CreateTicket)
         back_button.grid(row=2, column=0, pady=20)
 
-        feedback_widget = ttk.Label(main_frame, text="HELLO")
+        feedback_widget = ttk.Label(main_frame, text="An error occured. No modifications have been made.")
 
 
 if __name__ == "__main__":
