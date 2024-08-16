@@ -40,7 +40,7 @@ for row in local_logins:
         cursor.execute(f"""UPDATE user_logins SET password='{new_hash}' WHERE password='{row[1]}';""") #SQL injection :(
         continue
     else:
-        print(row[1] + "is a valid hash! Skipping \n")
+        print(row[1] + " is a valid hash! Skipping \n")
 
 
 #Save and close the connection.
